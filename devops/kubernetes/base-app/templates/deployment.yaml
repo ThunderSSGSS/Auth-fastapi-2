@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-deployment
+  labels:
+    app: {{ .Values.name }}
+
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ .Values.name }}
+          image: {{ .Values.deployment.image }}:{{ .Values.deployment.tag }}
+          imagePullPolicy: {{ .Values.deployment.pullPolicy }}
+
+          #CONATINER PORTS
+          {{- if .Values.deployment.create_port }}
+          ports:
+          {{- range .Values.deployment.ports }}
+          - containerPort: {{ .port }}
+            name: {{ .name }}
+          {{- end }}
+          {{- end }}
+
+          {{- $root := . }}
+          #CONATINER ENVS
+          {{- if .Values.deployment.create_env }}
+          env:
+          {{- range .Values.deployment.envs }}
+          - name: {{ .name }}
+            valueFrom:
+            {{- if .is_secret }}
+              secretKeyRef:
+                name: {{ $root.Values.name }}-secret
+            {{- else }}
+              configMapKeyRef:
+                name: {{ $root.Values.name }}-configmap
+            {{- end }}
+                key: {{ .key }}
+          {{- end }}
+          {{- end }}

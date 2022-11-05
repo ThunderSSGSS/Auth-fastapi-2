@@ -1,0 +1,107 @@
+name: auth-server
+
+#______INGRESS_VALUES_________#
+ingress:
+  create: true
+  host: auth-server.com
+  paths:
+    - path: /auth/
+      pathType: Prefix
+    - path: /admin/
+      pathType: Prefix
+
+#______SECRET_VALUES_________#
+secret:
+  create: true
+  keys:
+    #DATABASE URI
+    #<username>:<password>@<hostname>/<db_name>
+    - key: database-uri
+      value: ZXhhbXBsZTpleGFtcGxlQGRhdGFiYXNlLXNlcnZpY2UuZGF0YWJhc2UtbmFtZXNwYWNlL2F1dGg=
+
+    #BROKER URI
+    #amqp://<username>:<password>@<hostname>/<vhost_name>
+    - key: broker-uri
+      value: YW1xcDovL2V4YW1wbGU6ZXhhbXBsZUBicm9rZXItc2VydmljZS5icm9rZXItbmFtZXNwYWNlLy8=
+    
+    #AUTH
+    #string of 64 chars, you can generate using: openssl rand -hex 32
+    - key: private-key
+      value: MTc1NTkyNThkM2FjMTQ1ZDcxN2RjYWZlYTMyNzdmZTgyYTNjYjVkNWJhZDAxMjk2OTI1YmRkOWEyZTBjMzM3MA==
+    
+    #string of 32 chars, you can generate using: openssl rand -hex 16
+    - key: secret-key
+      value: YTg2YTU3ZWQ0MWQ5NzIwYmQ0ODE1OTQ5MTdkYTJiY2E=
+
+
+#______CONFIGMAP_VALUES_________#
+configmap:
+  create: true
+  keys:
+    #Broker Queues
+    - key: db-transactions-queue
+      value: auth_db_transactions
+    - key: email-queue
+      value: auth_emails
+    
+    #Expirations time minutes
+    - key: access-token-exp
+      value: "'10'"
+    - key: refresh-token-exp
+      value: "'60'"
+    - key: random-exp
+      value: "'10'"
+
+#____DEPLOYMENT_VALUES_____#
+deployment:
+  replicas: 1
+  image: auth-fastapi-2_auth-server
+  tag: latest
+  pullPolicy: IfNotPresent
+
+  #container ports
+  create_port: true
+  ports:
+    - name: http
+      port: 80
+  
+  #container envs
+  create_env: true
+  envs:
+    - name: RABBITMQ_URI
+      is_secret: true
+      key: broker-uri
+    - name: DB_TRANSACTIONS_QUEUE
+      is_secret: false
+      key: db-transactions-queue
+    - name: EMAILS_QUEUE
+      is_secret: false
+      key: email-queue
+    - name: ACCESS_TOKEN_EXP
+      is_secret: false
+      key: access-token-exp
+    - name: REFRESH_TOKEN_EXP
+      is_secret: false
+      key: refresh-token-exp
+    - name: RANDOM_EXP
+      is_secret: false
+      key: random-exp
+    - name: PRIVATE_KEY
+      is_secret: true
+      key: private-key
+    - name: SECRET_KEY
+      is_secret: true
+      key: secret-key
+    - name: DATABASE_URI
+      is_secret: true
+      key: database-uri
+
+
+#____SERVICE_VALUES____#
+service:
+  create: true
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80

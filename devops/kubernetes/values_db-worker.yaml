@@ -1,0 +1,55 @@
+#___APP_NAME_________#
+name: db-worker
+
+#______SECRET_VALUES_________#
+secret:
+  create: true
+  keys:
+    - key: admin_user_email
+      value: YWRtaW5AYWRtaW4uY29t
+  
+    #DATABASE URI
+    #<username>:<password>@<hostname>/<db_name>
+    - key: database-uri
+      value: ZXhhbXBsZTpleGFtcGxlQGRhdGFiYXNlLXNlcnZpY2UuZGF0YWJhc2UtbmFtZXNwYWNlL2F1dGg=
+
+    #BROKER URI
+    #amqp://<username>:<password>@<hostname>/<vhost_name>
+    - key: broker-uri
+      value: YW1xcDovL2V4YW1wbGU6ZXhhbXBsZUBicm9rZXItc2VydmljZS5icm9rZXItbmFtZXNwYWNlLy8=
+ 
+
+#______CONFIGMAP_VALUES_________#
+configmap:
+  create: true
+  keys:
+    #Broker Queues
+    - key: db-transactions-queue
+      value: auth_db_transactions
+
+
+#____DEPLOYMENT_VALUES_____#
+deployment:
+  replicas: 1
+  image: auth-fastapi-2_db-worker
+  tag: latest
+  pullPolicy: IfNotPresent
+  
+  #container envs
+  create_env: true
+  envs:
+    - name: ADMIN_USER_EMAIL
+      is_secret: true
+      key: admin_user_email
+
+    - name: RABBITMQ_URI
+      is_secret: true
+      key: broker-uri
+
+    - name: WORKER_DEFAULT_QUEUE
+      is_secret: false
+      key: db-transactions-queue
+      
+    - name: DATABASE_URI
+      is_secret: true
+      key: database-uri

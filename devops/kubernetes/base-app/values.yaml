@@ -1,0 +1,55 @@
+#___APP_NAME_________#
+name: app-name
+
+#______INGRESS_VALUES_________#
+ingress:
+  create: false #if true, create ingres
+  host: host.com
+  #paths
+  paths:
+    - path: /path/
+      pathType: Prefix
+
+#______SECRET_VALUES_________#
+secret:
+  create: false #if true, create secret
+  keys:
+    - key: value
+      value: base64Value
+
+#______CONFIGMAP_VALUES_________#
+configmap:
+  create: false #if true, create configmap
+  keys:
+    - key: name
+      value: value
+
+#____DEPLOYMENT_VALUES_____#
+deployment:
+  replicas: 1
+  image: image_name
+  tag: tag
+  pullPolicy: IfNotPresent
+
+  #container ports
+  create_port: false #if true, create container ports
+  ports:
+    - name: http
+      port: 80
+  
+  #container envs
+  create_env: false #if true, create container env variables
+  envs:
+    - name: NAME
+      is_secret: true #if true, is secret key else is configmap key
+      key: secret_key
+
+
+#____SERVICE_VALUES____#
+service:
+  create: false #if true, create service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80

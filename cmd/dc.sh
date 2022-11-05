@@ -1,0 +1,1 @@
+cd ../devops/docker-compose && docker-compose $*
