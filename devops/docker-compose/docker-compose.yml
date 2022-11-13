@@ -14,9 +14,7 @@ services:
 
   #################____BROKER___#################
   broker:
-    build:
-      context: ../../src
-      dockerfile: broker-Dockerfile
+    image: rabbitmq:3.9.13-alpine
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}

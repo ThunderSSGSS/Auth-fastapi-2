@@ -9,6 +9,7 @@
 *.pyc
 
 #Others
+*.code-workspace
 *.pem
 *.drawio.*
 *.doc
