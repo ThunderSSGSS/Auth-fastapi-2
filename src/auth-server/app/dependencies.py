@@ -54,7 +54,7 @@ def _check_authorization(request: Request, permissions:list, groups:list):
 		service = get_check_authorization_service()
 		return service.start_service({'access_token':request.headers['Authorization'],
 			'permissions':permissions, 'groups':groups})
-	raise HTTPException(start_service=400, detail='Authorization not provited')
+	raise HTTPException(status_code=400,  detail='Authorization not provited')
 
 
 #___________CHECK_PERMISSIONS__________#
