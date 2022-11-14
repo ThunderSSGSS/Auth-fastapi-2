@@ -60,17 +60,7 @@ services:
       DATABASE_URI: ${DB_USER}:${DB_PASSWORD}@${DB_SERVER}/${DB_NAME}
     volumes:
       - ../../src/db-worker/:/code/
-  
 
-  ################__NGINX(API-GATEWAY)__############
-  nginx:
-    image: nginx:1.21.6-alpine
-    volumes:
-      - ./nginx.confs/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - auth-server
-    ports:
-      - 8080:80
 
   #################____AUTH_API___##################
   auth-server:
@@ -99,8 +89,10 @@ services:
       TEST_MODE: ${TEST_MODE}
     volumes:
       - ../../src/auth-server/:/code/
+    ports:
+      - 8080:80
 
-  #################____AUTH_API___##################
+  #################____TEST_APP___##################
   test-app:
     build: 
       context: ../../src/test-app
@@ -109,3 +101,5 @@ services:
       AUTHORIZATION_URL: ${AUTHORIZATION_URL}
     volumes:
       - ../../src/test-app/:/code/
+    ports:
+      - 8081:80

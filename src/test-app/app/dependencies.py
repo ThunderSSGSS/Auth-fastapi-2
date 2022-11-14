@@ -23,9 +23,13 @@ async def _check_authorization(access_token:str, permissions:list, groups:list):
 	data = {'access_token':access_token,'permissions':permissions, 'groups':groups}
 	result = await _make_request(AUTHORIZATION_URL, data)
 	if result['status'] !=200: 
-		raise HTTPException(result['status'], result['json'])
+		raise HTTPException(result['status'], result['json']['detail'])
 	else: return result['json']
 
 #______________CHECK_PERMISSIONS_____________________#
 async def check_admin_permission(token:str = Depends(_get_token_from_header)):
 	return await _check_authorization(token,['admin'],[])
+
+#______________CHECK_GROUPS_____________________#
+async def check_normal_group(token:str = Depends(_get_token_from_header)):
+	return await _check_authorization(token,[],['normal'])

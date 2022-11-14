@@ -7,5 +7,6 @@ import uuid
 
 
 #___________________User_Schemas_____________________________#
-class UserEmail(BaseModel):
-    email: str
+class ResponseSchema(BaseModel):
+    user_id:uuid.UUID
+    session_id:uuid.UUID
