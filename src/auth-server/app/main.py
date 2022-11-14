@@ -8,9 +8,9 @@ async def async_main():
 
 
 app = FastAPI()
-app.include_router(auth_routers.router, prefix='/auth', tags=['Auth Services'])
-app.include_router(admin_routers.router, prefix='/admin', tags=['Admin Services'])
-app.include_router(intra_routers.router, prefix='/intra', tags=['Intra Services'])
+app.include_router(auth_routers.router, prefix='/auth', tags=['auth'])
+app.include_router(admin_routers.router, prefix='/admin', tags=['admin'])
+app.include_router(intra_routers.router, prefix='/intra', tags=['intra'])
 
 """
 @app.on_event("startup")

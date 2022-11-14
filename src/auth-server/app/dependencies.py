@@ -23,8 +23,17 @@ from app.internal.application.admin import(UserCRUDService, PermissionCRUDServic
 #others
 from app.internal import warnings as war
 from app.internal.settings import RANDOM_EXP, TEST_MODE
+# Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 
+
+_security = HTTPBearer()
+
+def _get_token_from_header(credentials: HTTPAuthorizationCredentials= Depends(_security)):
+	return credentials.credentials
+
+#_____DATABASE_SESSIONS________#
 
 async def _get_db_session():
 	if TEST_MODE: yield None
@@ -49,86 +58,83 @@ def get_check_authorization_service():
 	token_generator = TokenGenerator()
 	return CheckAuthorizationService(token_generator)
 
-def _check_authorization(request: Request, permissions:list, groups:list):
-	if 'Authorization' in request.headers:
-		service = get_check_authorization_service()
-		return service.start_service({'access_token':request.headers['Authorization'],
-			'permissions':permissions, 'groups':groups})
-	raise HTTPException(status_code=400,  detail='Authorization not provited')
+def _check_authorization(access_token: str, permissions:list, groups:list):
+	service = get_check_authorization_service()
+	return service.start_service({'access_token':access_token, 'permissions':permissions, 'groups':groups})
 
 
 #___________CHECK_PERMISSIONS__________#
 
 #________admins permissions______#
-def _check_admin_permission(req: Request):
-	return _check_authorization(req,['admin'],[])
+def _check_admin_permission(token:str= Depends(_get_token_from_header)):
+	return _check_authorization(token,['admin'],[])
 
 #user management permissions
-def _check_create_user_permission(req: Request):
-	return _check_authorization(req,['create_user'],[])
+def _check_create_user_permission(token:str= Depends(_get_token_from_header)):
+	return _check_authorization(token,['create_user'],[])
 
-def _check_read_user_permission(req: Request):
-	return _check_authorization(req,['read_user'],[])
+def _check_read_user_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['read_user'],[])
 
-def _check_update_user_permission(req: Request):
-	return _check_authorization(req,['update_user'],[])
+def _check_update_user_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['update_user'],[])
 
-def _check_delete_user_permission(req: Request):
-	return _check_authorization(req,['delete_user'],[])
+def _check_delete_user_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['delete_user'],[])
 
 #permissions management permissions
-def _check_create_permission_permission(req: Request):
-	return _check_authorization(req,['create_permission'],[])
+def _check_create_permission_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['create_permission'],[])
 
-def _check_read_permission_permission(req: Request):
-	return _check_authorization(req,['read_permission'],[])
+def _check_read_permission_permission(token:str= Depends(_get_token_from_header)):
+	return _check_authorization(token,['read_permission'],[])
 
-def _check_delete_permission_permission(req: Request):
-	return _check_authorization(req,['delete_permission'],[])
+def _check_delete_permission_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['delete_permission'],[])
 
 #groups management permissions
-def _check_create_group_permission(req: Request):
-	return _check_authorization(req,['create_group'],[])
+def _check_create_group_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['create_group'],[])
 
-def _check_read_group_permission(req: Request):
-	return _check_authorization(req,['read_group'],[])
+def _check_read_group_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['read_group'],[])
 
-def _check_delete_group_permission(req: Request):
-	return _check_authorization(req,['delete_group'],[])
+def _check_delete_group_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['delete_group'],[])
 
 #grant permissions and groups management permissions
-def _check_grant_permission_to_permission(req: Request):
-	return _check_authorization(req,['grant_permission_to'],[])
+def _check_grant_permission_to_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['grant_permission_to'],[])
 
-def _check_remove_permission_from_permission(req: Request):
-	return _check_authorization(req,['remove_permission_from'],[])
+def _check_remove_permission_from_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['remove_permission_from'],[])
 
-def _check_add_user_to_group_permission(req: Request):
-	return _check_authorization(req,['add_user_to_group'],[])
+def _check_add_user_to_group_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token,['add_user_to_group'],[])
 
-def _check_remove_user_from_group_permission(req: Request):
-	return _check_authorization(req,['remove_user_from_group'],[])
+def _check_remove_user_from_group_permission(token:str= Depends(_get_token_from_header)):
+	return _check_authorization(token,['remove_user_from_group'],[])
 
 #session management permissions
-def _check_delete_session_permission(req: Request):
-	return _check_authorization(req,['delete_session'],[])
+def _check_delete_session_permission(token:str= Depends(_get_token_from_header)):
+	return _check_authorization(token,['delete_session'],[])
 
 
 #______normal permissions_______#
-def _check_set_password_permission(req: Request):
-	return _check_authorization(req, ['set_own_password'],[])
+def _check_set_password_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token, ['set_own_password'],[])
 
-def _check_set_username_permission(req: Request):
-	return _check_authorization(req, ['set_own_username'],[])
+def _check_set_username_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token, ['set_own_username'],[])
 
-def _check_set_email_permission(req: Request):
-	return _check_authorization(req, ['set_own_email'],[])
+def _check_set_email_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token, ['set_own_email'],[])
 
-def _check_logout_permission(req: Request):
-	return _check_authorization(req, ['logout'],[])
+def _check_logout_permission(token:str= Depends(_get_token_from_header)):
+	return _check_authorization(token, ['logout'],[])
 
-def _check_read_own_user_data_permission(req: Request):
-	return _check_authorization(req, ['read_own_user_data'],[])
+def _check_read_own_user_data_permission(token:str =Depends(_get_token_from_header)):
+	return _check_authorization(token, ['read_own_user_data'],[])
 
 
 #__________________________SERVICES_DEPENDENCES______________________________#
