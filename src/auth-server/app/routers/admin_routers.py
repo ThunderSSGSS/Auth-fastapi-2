@@ -37,7 +37,8 @@ async def create_user(data: schemas.CreateUserSchema, service: AdminCRUDServiceI
 		This route will create a user.
 		<p><b>Note</b>: If *is_complete=true*, the created user don't need complete signup.<br>
 		If *is_complete=false*, will create a signup random code and send to created user email, so that the user needs to complete signup.</p>
-		<p><b>Note2</b>: To use this route the user must have the permission 'create_user' or 'admin'.</p>
+		<p><b>Note2</b>: The created user don't have any permission or group.</p>
+		<p><b>Note3</b>: To use this route the user must have the permission 'create_user' or 'admin'.</p>
 		<p><b>Return</b>: the user id</p>
 	"""
 	return await service.create(data.dict())

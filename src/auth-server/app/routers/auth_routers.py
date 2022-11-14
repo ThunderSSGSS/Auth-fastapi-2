@@ -27,7 +27,7 @@ async def signup(data: schemas.SignupSchema,
 		## Signup
 		This route will:<br>
 		* create a user;<br>
-		* add the created user to the *normal* group;<br>
+		* add the created user to the 'normal' group (the 'normal' group have the basic permissions);<br>
 		* send a random code to the user email to complete the signup.<br>
 		<p><b>Note</b>: the random code expires.</p>
 		<p><b>Return</b>: user id and email.</p>
@@ -92,6 +92,7 @@ async def logout(service: AuthServiceInterface = Depends(get_logout_service)):
 		## Logout
 		This route will delete the user session.
 		<p><b>Note</b>: After logout, the session refresh token wan't work anymore, but the access token will work until expire.</p>
+		<p><b>Note2</b>: To use this route the user must have the permission 'logout' or 'admin'.</p>
 	"""
 	return await service.start_service(None)
 
@@ -140,6 +141,7 @@ async def set_email(data: schemas.SetEmailSchema,
 		## Set email (pass 1 of the set email flow)
 		This route will send a random code to the new email.
 		<p><b>Note</b>: For security, if the user don't complete the set email flow will return an error.</p>
+		<p><b>Note2</b>: To use this route the user must have the permission 'set_own_email' or 'admin'.</p>
 	"""
 	return await service.start_service(data.dict())
 
@@ -152,6 +154,7 @@ async def complete_set_email(data: schemas.CompleteSetEmailSchema,
 		## Complete set email (final pass of the set email flow)
 		This route will set the user email.
 		<p><b>Note</b>: If the *random* is expired will return an error.</p>
+		<p><b>Note2</b>: To use this route the user must have the permission 'set_own_email' or 'admin'.</p>
 	"""
 	return await service.start_service(data.dict())
 
@@ -163,6 +166,7 @@ async def regenerate_email_random(service: AuthServiceInterface = Depends(get_re
 		## Regenerate email Random
 		This route will regenerate the set email random code and send to email.
 		<p><b>Note</b>: For security, if the *random* is not expired will return an error.</p>
+		<p><b>Note2</b>: To use this route the user must have the permission 'set_own_email' or 'admin'.</p>
 	"""
 	return await service.start_service(None)
 
@@ -174,6 +178,7 @@ async def set_password(data: schemas.SetPasswordSchema,
 	"""
 		## Set Password
 		This route will set the user email.
+		<p><b>Note</b>: To use this route the user must have the permission 'set_own_password' or 'admin'.</p>
 	"""
 	return await service.start_service(data.dict())
 
@@ -184,6 +189,7 @@ async def get_user_data(service: AuthServiceInterface = Depends(get_user_data_se
 	"""
 		## Get User Data
 		This route will return user data, permissions, groups and sessions.
+		<p><b>Note</b>: To use this route the user must have the permission 'read_own_user_data' or 'admin'.</p>
 	"""
 	return await service.start_service(None)
 
@@ -195,5 +201,6 @@ async def set_username(data: schemas.SetUsernameSchema,
 	"""
 		## Set Username
 		This route will set the username.
+		<p><b>Note</b>: To use this route the user must have the permission 'set_own_username' or 'admin'.</p>
 	"""
 	return await service.start_service(data.dict())
