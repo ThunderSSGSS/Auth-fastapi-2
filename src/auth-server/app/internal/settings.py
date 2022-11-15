@@ -27,7 +27,7 @@ DATABASE_URI = os.environ.get('DATABASE_URI')
 if not TEST_MODE:
 	if DATABASE_URI is None: raise _not_setted_exception('DATABASE_URI')
 	elif not DatabaseUriValidator.is_valid(DATABASE_URI): raise _invalid_exception('DATABASE_URI')
-
+else: DATABASE_URI='a'
 
 #_______________CACHE_SETTINGS________________#
 
@@ -90,3 +90,4 @@ if not TEST_MODE:
 
 	if not RabbitmqQueueValidator.is_valid(RABBITMQ_QUEUES['EMAILS']): raise _invalid_exception('EMAILS_QUEUE')
 	if not RabbitmqQueueValidator.is_valid(RABBITMQ_QUEUES['DB_TRANSACTIONS']): raise _invalid_exception('DB_TRANSACTIONS_QUEUE')
+else: RABBITMQ_URI='n'
