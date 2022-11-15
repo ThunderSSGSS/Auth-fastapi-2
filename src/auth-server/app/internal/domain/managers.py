@@ -113,17 +113,17 @@ class BaseLoggedManager(BaseManager):
 
 	def create(self, data:dict):
 		entity, transactions_list = super().create(data.copy())
-		transactions_list.extend(self._create_log(entity.get_id(), 'C', data))
+		transactions_list.extend(self._create_log(entity.get_id(), 'create', data))
 		return entity, transactions_list
 
 	def update(self, unique_data:dict, new_data:dict):
 		transactions_list = super().update(unique_data.copy(), new_data.copy())
-		transactions_list.extend(self._create_log(unique_data, 'U', new_data))
+		transactions_list.extend(self._create_log(unique_data, 'update', new_data))
 		return transactions_list
 
 	def delete(self, unique_data:dict):
 		transactions_list = super().delete(unique_data.copy())
-		transactions_list.extend(self._create_log(unique_data, 'D'))
+		transactions_list.extend(self._create_log(unique_data, 'delete'))
 		return transactions_list
 		
 
@@ -142,7 +142,7 @@ class BaseLoggedRelationalManager(BaseLoggedManager, RelationalManagerInterface)
 	def delete_many_by(self, repeated_data:dict):
 		repeated_data2 = self._get_dict_by(repeated_data)
 		transactions_list = [DeleteManyBy(self._repository.get_tablename(), repeated_data2)]
-		transactions_list.extend(self._create_log(repeated_data2, 'DM'))
+		transactions_list.extend(self._create_log(repeated_data2, 'delete_many_by'))
 		return transactions_list
 
 
@@ -164,7 +164,7 @@ class UserManager(BaseLoggedManager):
 		return self._password_hasher.hash_password(password)
 
 	def create(self, data:dict):
-		#data.keys() = ['email', 'username', 'password'] and ['is_complete']
+		#data.keys() = ['email', 'username', 'password', 'salt'] and ['is_complete']
 		data_create = data.copy()
 		data_create['password'] = self._hash_password(data['password'])
 		data_create['id'] = uuid.uuid4()
@@ -178,7 +178,7 @@ class UserManager(BaseLoggedManager):
 
 	def update(self, unique_data:dict, new_data:dict):
 		#unique_data.keys() = ['id']
-		#new_data.keys() = ['username'] or ['email'] or ['password']
+		#new_data.keys() = ['username'] or ['email'] or ['password','salt']
 		new_data2 = new_data.copy()
 		if 'password' in new_data: 
 			new_data2['password'] = self._hash_password(new_data['password'])

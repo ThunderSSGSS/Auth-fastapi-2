@@ -28,7 +28,6 @@ _PUBLIC_KEY = AUTH['PUBLIC_KEY']
 _PRIVATE_KEY = AUTH['PRIVATE_KEY']
 
 _SECRET_KEY = AUTH['SECRET_KEY']
-_PASSWORD_SALT = AUTH['PASSWORD_SALT']
 
 _ACCESS_TOKEN_EXP = int(AUTH['ACCESS_TOKEN_EXP'])
 _REFRESH_TOKEN_EXP = int(AUTH['REFRESH_TOKEN_EXP'])
@@ -66,12 +65,12 @@ def _unauthorized_exception(name:str):
 
 _pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def _verify_password(plain_password:str, hashed_password:str, salt:str=_PASSWORD_SALT):
-	try: return _pwd_context.verify(plain_password+salt, hashed_password)
+def _verify_password(plain_password:str, hashed_password:str):
+	try: return _pwd_context.verify(plain_password, hashed_password)
 	except UnknownHashError: return False
 
-def _hash_password(password:str, salt:str=_PASSWORD_SALT):
-    return _pwd_context.hash(password+salt)
+def _hash_password(password:str):
+    return _pwd_context.hash(password)
 
 
 #_________________________AES_ENCRYPTION________________________________#

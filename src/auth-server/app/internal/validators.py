@@ -128,6 +128,7 @@ class UpdateUserValidator(BaseManagerUpdateValidator):
 	email:Optional[str]
 	username:Optional[str]
 	password:Optional[str]
+	salt:Optional[str]
 	is_complete:Optional[bool]
 
 	#validators
@@ -139,6 +140,7 @@ class CreateUserValidator(UpdateUserValidator, BaseManagerCreateValidator):
 	email:str
 	username:str
 	password:str
+	salt:str
 
 
 #_____RANDOM______#

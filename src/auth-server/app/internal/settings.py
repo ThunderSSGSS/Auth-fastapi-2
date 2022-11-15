@@ -48,7 +48,6 @@ AUTH={
 	'PUBLIC_KEY':  os.environ.get('PUBLIC_KEY', os.environ.get('PRIVATE_KEY')),
 
 	'SECRET_KEY': os.environ.get('SECRET_KEY'),
-	'PASSWORD_SALT': os.environ.get('PASSWORD_SALT','1234567@'),
 
 	'ACCESS_TOKEN_EXP': os.environ.get('ACCESS_TOKEN_EXP', '20'),
 	'REFRESH_TOKEN_EXP': os.environ.get('REFRESH_TOKEN_EXP', '50')

@@ -36,6 +36,7 @@ class User(Entity):
 		self.username:str = kwargs['username']
 		self.email:str = kwargs['email']
 		self.password:str = kwargs['password']
+		self.salt:str = kwargs['salt']
 		self.is_complete:bool = kwargs.get('is_complete',False)
 		super().__init__(**kwargs)
 	

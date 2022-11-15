@@ -60,7 +60,7 @@ _database={
 
     'users': [
         {'id':__adim_user_id, 'email':'admin@admin.com', 'username':'ADMIN', 'password':'naa', 
-            'is_complete':True,'created':__date, 'updated':__date}
+            'is_complete':True, 'salt':uuid.uuid4(),'created':__date, 'updated':__date}
     ],
 
     'user_permissions': [

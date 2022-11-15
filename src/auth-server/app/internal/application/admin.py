@@ -92,6 +92,10 @@ class UserCRUDService(BaseAdminService, AdminCRUDServiceInterface):
         self._session_manager = session_manager
         self._email_sender = email_sender
     
+
+    def _generate_password_salt(self): # on services, i have the same function
+        return uuid.uuid4()
+    
     async def create(self, data: dict):
         #data.keys() = ['email', 'username', 'password', 'is_complete']
         self._validate_received_data(CreateUserAdminValidator, data)
@@ -101,6 +105,10 @@ class UserCRUDService(BaseAdminService, AdminCRUDServiceInterface):
             await self._user_manager.get({'email':data['email']}), 'email')
         
         transactions_list = []
+
+        #generating salt
+        data['salt'] = str(self._generate_password_salt())
+        data['password'] = data['password'] + data['salt']
 
         #create the user
         user, tran = self._user_manager.create(data)
