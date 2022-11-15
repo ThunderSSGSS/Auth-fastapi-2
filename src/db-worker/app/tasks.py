@@ -41,27 +41,34 @@ def select_crud(tablename):
 
 
 def process_errors(type_error:str, errors:list):
-	msg = 'ERROR____:'+type_error
+	msg = 'ERROR:'+type_error
 	for error in errors:
 		msg=msg+'\n'+error
 	print(msg)
 
-def create_object(crud, data:dict):
-	if crud.validate_create(data): crud.create_object(data)
-	else: process_errors('CREATE_ERROR', crud.get_errors())
+#________________CRUD_OPERATIONS____________________________#
 
+def create_object(crud, data:dict):
+	value = crud.validate_create(data)
+	if value: crud.create_object(data)
+	else: process_errors('CREATE_ERROR', crud.get_errors())
+	return value
+		
 def update_object(crud, unique_data:dict, new_data:dict):
-	if crud.validate_update(new_data): crud.update_object(unique_data, new_data)
+	value = crud.validate_update(new_data) 
+	if value: crud.update_object(unique_data, new_data)
 	else: process_errors('UPDATE_ERROR', crud.get_errors())
+	return value
 
 def delete_object(crud, unique_data):
 	crud.delete_object(unique_data)
+	return True
 
 def delete_many_objects_by(crud, repeated_data:dict):
 	crud.delete_many_objects_by(repeated_data)
+	return True
 
-
-#___________DATABASE_FUNCTION_________________________#
+#____________________TASKS_________________________#
 
 @app.task(name='process_transactions')
 def process_transactions(transactions_list):
@@ -79,21 +86,25 @@ def process_transactions(transactions_list):
 		if transaction_type is None: break
 		crud = crud_class(session)
 
+		# CREATE
 		if transaction_type == 'create':
-			create_object(crud, transaction['data'])
-			setted=True
-
+			setted = create_object(crud, transaction['data'])
+			if not setted: break
+		
+		# UPDATE
 		elif transaction_type == 'update':
-			update_object(crud, transaction['id'], transaction['data'])
-			setted=True
-
+			setted = update_object(crud, transaction['id'], transaction['data'])
+			if not setted: break
+		
+		# DELETE
 		elif transaction_type == 'delete':
-			delete_object(crud, transaction['id'])
-			setted=True
-
+			setted = delete_object(crud, transaction['id'])
+			if not setted: break
+		
+		# DELETE_MANY_BY
 		elif transaction_type == 'delete_many_by':
-			delete_many_objects_by(crud, transaction['id'])
-			setted=True
+			setted = delete_many_objects_by(crud, transaction['id'])
+			if not setted: break
 
 	if setted: session.commit()
 	session.close()

@@ -19,16 +19,16 @@ def send_email(to, subject, message):
 	return _send_email(to, subject, message)
 
 @celery_auth.task(base=EmailTask, name='send_signup_email')
-def send_signup_email(to, random_key, data_dict):
-	return _send_signup_email(to, random_key)
+def send_signup_email(to, random_code, data_dict):
+	return _send_signup_email(to, random_code)
 
 @celery_auth.task(base=EmailTask, name='send_password_forget_email')
-def send_password_forget_email(to, random_key, data_dict):
-	return _send_password_forget_email(to, random_key)
+def send_password_forget_email(to, random_code, data_dict):
+	return _send_password_forget_email(to, random_code)
 
 @celery_auth.task(base=EmailTask, name='send_set_email')
-def send_set_email(to, random_key, data_dict):
-	return _send_set_email(to, random_key)
+def send_set_email(to, random_code, data_dict):
+	return _send_set_email(to, random_code)
 
 
 #____________________________DATABASE_TASKS____________________________#
