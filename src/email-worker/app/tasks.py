@@ -13,7 +13,7 @@ def _send_email(to:str, subject:str, message:str):
 	email_text = "From: "+email_user+"\n"
 	email_text+="To: "+to+"\n"
 	email_text+= "Subject: "+subject+"\n"
-	email_text+= message
+	email_text+= "\n"+message
 
 	#send email by outlook smtp
 	try:
@@ -56,6 +56,6 @@ def send_password_forget_email(to, random_code, data_dict):
 
 @app.task(name='send_set_email')
 def send_set_email(to, random_code, data_dict):
-	message = "Your restaure password CODE is: "+random_code
+	message = "Your Set Email CODE is: "+random_code
 	print(message)
-	_send_email(to,'Restaure Password CODE',message)
+	_send_email(to,'Set Email CODE',message)

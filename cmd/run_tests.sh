@@ -6,7 +6,7 @@ sleep 6s && export TEST_MODE=YES && \
 docker-compose up -d auth-server
 
 #Run TEST
-docker exec -it auth-fastapi-2_auth-server_1 pytest /code/tests/
+docker exec -it auth-fastapi-2_auth-server_1 pytest tests
 
 #Stop and delete container
 docker-compose down
