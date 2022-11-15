@@ -40,14 +40,10 @@ This mode creates automaticaly a admin user with email defined on [.env](../../d
 ### Comands
 On path [cmd](../../cmd), I create some scripts to run the project.
 - [dc.sh](../../cmd/dc.sh), shotcut of docker-compose comand;
-- [init.sh](../../cmd/init.sh), used to init the project;
+- [init.sh](../../cmd/init.sh), used to init the project, will build the base docker images;
 - [run_tests.sh](../../cmd/run_tests.sh), used to make automatic test (TestMode);
 - [start_k8s.sh](../../cmd/start_k8s.sh), used to start the project on kubernetes cluster (DevMode);
 - [stop_k8s.sh](../../cmd/stop_k8s.sh), used to stop the project on kubernetes cluster (DevMode);
-- [start_server.sh](../../cmd/start_server.sh), used to start auth-server containers (ProductionMode);
-- [stop_server.sh](../../cmd/stop_server.sh), used to stop auth-server containers (ProductionMode);
-- [start_workers.sh](../../cmd/start_workers.sh), used to start email-worker and db-worker containers (ProductionMode);
-- [stop_workers.sh](../../cmd/stop_workers.sh), used to stop email-worker and db-worker containers (ProductionMode);
 - [start.sh](../../cmd/start.sh), used to start the project on docker (DevMode);
 - [stop.sh](../../cmd/stop.sh), used to stop the project on docker (DevMode).
 
