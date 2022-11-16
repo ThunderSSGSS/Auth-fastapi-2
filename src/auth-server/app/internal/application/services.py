@@ -69,9 +69,7 @@ class BaseService():
 			raise HTTPExceptionGenerator(status_code=400,
 				detail=HTTPExceptionGenerator.generate_detail(fields=['random'], 
 					error_type=error_type, msg=war.expired_msg('random',not want_value)))
-	
-	def _generate_password_salt(self): # on admin service i have this function too
-		return uuid.uuid4()
+
 
 #_________________________________NO_AUTH_SERVICES___________________________________________________#
 
@@ -175,10 +173,6 @@ class SignupService(BaseService, NoAuthServiceInterface):
 		self._check_found(await self._user_manager.get({'email':data['email']}), 'email')
 
 		transactions_list = []
-
-		#generating salt
-		data['salt'] = str(self._generate_password_salt())
-		data['password'] = data['password'] + data['salt']
 
 		#create the user
 		user, tran = self._user_manager.create(data)
@@ -481,11 +475,8 @@ class RestaurePasswordService(BaseAuthService, NoAuthServiceInterface):
 
 		transactions_list = []
 
-		#generating salt
-		salt_password = str(self._generate_password_salt())
-
 		#set user password
-		tran = self._user_manager.update({'id':user.id}, {'password': data['new_password']+salt_password, 'salt':salt_password})
+		tran = self._user_manager.update({'id':user.id}, {'password': data['new_password']})
 		transactions_list.extend(tran)
 
 		#delete random
@@ -590,11 +581,8 @@ class SetPasswordService(BaseAuthService, AuthServiceInterface):
 
 		transactions_list = []
 
-		#generating salt
-		salt_password = str(self._generate_password_salt())
-
 		#set user password
-		tran = self._user_manager.update({'id':user.id}, {'password': data['new_password']+salt_password, 'salt':salt_password})
+		tran = self._user_manager.update({'id':user.id}, {'password': data['new_password']})
 		transactions_list.extend(tran)
 
 		#process transactions

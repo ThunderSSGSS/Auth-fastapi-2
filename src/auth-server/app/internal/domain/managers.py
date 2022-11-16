@@ -160,13 +160,18 @@ class UserManager(BaseLoggedManager):
 		super().__init__(log_manager,repository)
 		self._password_hasher = password_hasher
 
+	def _generate_password_salt(self):
+		return str(uuid.uuid4())
+
 	def _hash_password(self, password:str):
 		return self._password_hasher.hash_password(password)
 
 	def create(self, data:dict):
-		#data.keys() = ['email', 'username', 'password', 'salt'] and ['is_complete']
+		#data.keys() = ['email', 'username', 'password'] and ['is_complete']
 		data_create = data.copy()
-		data_create['password'] = self._hash_password(data['password'])
+		salt = self._generate_password_salt()
+		data_create['salt'] = salt
+		data_create['password'] = self._hash_password(data['password']+salt)
 		data_create['id'] = uuid.uuid4()
 		return super().create(data_create)
 
@@ -178,10 +183,12 @@ class UserManager(BaseLoggedManager):
 
 	def update(self, unique_data:dict, new_data:dict):
 		#unique_data.keys() = ['id']
-		#new_data.keys() = ['username'] or ['email'] or ['password','salt']
+		#new_data.keys() = ['username'] or ['email'] or ['password']
 		new_data2 = new_data.copy()
-		if 'password' in new_data: 
-			new_data2['password'] = self._hash_password(new_data['password'])
+		if 'password' in new_data:
+			salt = self._generate_password_salt()
+			new_data2['salt'] = salt
+			new_data2['password'] = self._hash_password(new_data['password']+salt)
 		return super().update(unique_data, new_data2)
 
 

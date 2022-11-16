@@ -38,7 +38,7 @@ services:
       SENDER_EMAIL: ${SENDER_EMAIL}
       SENDER_EMAIL_PASSWORD: ${SENDER_EMAIL_PASSWORD}
     volumes:
-      - ../../src/email-worker/:/code/
+      - ../../src/email-worker/:/home/myuser/
 
 
   #################____DB_WORKER___##################
@@ -59,7 +59,7 @@ services:
       #<username>:<password>@<hostname>/<db_name>
       DATABASE_URI: ${DB_USER}:${DB_PASSWORD}@${DB_SERVER}/${DB_NAME}
     volumes:
-      - ../../src/db-worker/:/code/
+      - ../../src/db-worker/:/home/myuser/
 
 
   #################____AUTH_API___##################
@@ -88,7 +88,7 @@ services:
       #___TEST_MODE_____#
       TEST_MODE: ${TEST_MODE}
     volumes:
-      - ../../src/auth-server/:/code/
+      - ../../src/auth-server/:/home/myuser/
     ports:
       - 8080:80
 
@@ -100,6 +100,6 @@ services:
     environment:
       AUTHORIZATION_URL: ${AUTHORIZATION_URL}
     volumes:
-      - ../../src/test-app/:/code/
+      - ../../src/test-app/:/home/myuser/
     ports:
       - 8081:80
