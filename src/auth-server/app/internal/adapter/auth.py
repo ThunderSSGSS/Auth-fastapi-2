@@ -17,6 +17,7 @@ from app.internal.validators import ToEncodeValidator, DecodedValidator
 from app.internal.exceptions import AuthServerException, HTTPExceptionGenerator
 #AES
 from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
 from base64 import b64encode, b64decode
 
@@ -33,8 +34,6 @@ _ACCESS_TOKEN_EXP = int(AUTH['ACCESS_TOKEN_EXP'])
 _REFRESH_TOKEN_EXP = int(AUTH['REFRESH_TOKEN_EXP'])
 
 #AES_CBC
-_IV_access_token= _SECRET_KEY[0:16].encode()
-_IV_refresh_token= _SECRET_KEY[16:32].encode()
 _SECRET_KEY_encoded = _SECRET_KEY.encode()
 
 
@@ -76,16 +75,17 @@ def _hash_password(password:str):
 #_________________________AES_ENCRYPTION________________________________#
 
 def _encrypt_AES(plaintext:str, is_access_token:bool, key_bytes=_SECRET_KEY_encoded):
-	iv = _IV_access_token
-	if not is_access_token: iv= _IV_refresh_token
+	iv= get_random_bytes(16) #generate
 	cipher = AES.new(key_bytes, AES.MODE_CBC, iv)
-	return b64encode(cipher.encrypt(pad(plaintext.encode(),16))).decode()
+	return b64encode(iv+cipher.encrypt(pad(plaintext.encode(),16))).decode()
 
 def _decrypt_AES(ciphertext:str, is_access_token:bool, key_bytes=_SECRET_KEY_encoded):
-	iv = _IV_access_token
-	if not is_access_token: iv= _IV_refresh_token
-	cipher = AES.new(key_bytes, AES.MODE_CBC, iv)
-	try: return unpad(cipher.decrypt(b64decode(ciphertext.encode())),16).decode()
+	try:
+		cipherbytes = b64decode(ciphertext.encode())
+		iv = cipherbytes[0:16]
+		cipherbytes = cipherbytes[16:]
+		cipher = AES.new(key_bytes, AES.MODE_CBC, iv)
+		return unpad(cipher.decrypt(cipherbytes),16).decode()
 	except:
 		if is_access_token: raise _token_invalid_exception('access_token')
 		else: raise _token_invalid_exception('refresh_token')
