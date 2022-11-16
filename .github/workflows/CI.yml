@@ -8,6 +8,7 @@ on:
     branches: [ "master" ]
 
 env:
+  RELEASE_VERSION: v0.3.0
   AUTH-SERVER-REPO: thunderssgss/auth-server
   DB-WORKER-REPO: thunderssgss/db-worker
   EMAIL-WORKER-REPO: thunderssgss/email-worker
@@ -20,17 +21,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Get the release version
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Build base images
         run: cd cmd && chmod +x init.sh && ./init.sh && cd ..
 
       - name: Build auth-server, email-worker and db-worker docker images
         run: |
-          cd src/auth-server && docker build -t {{ env.AUTH-SERVER-REPO }}:{{ env.RELEASE_VERSION }} && cd ../..
-          cd src/db-worker && docker build -t {{ env.DB-WORKER-REPO }}:{{ env.RELEASE_VERSION }} && cd ../..
-          cd src/db-email && docker build -t {{ env.EMAIL-WORKER-REPO }}:{{ env.RELEASE_VERSION }} && cd ../..
+          cd src/auth-server && docker build . -t ${{ env.AUTH-SERVER-REPO }}:${{ env.RELEASE_VERSION }}
+          cd ../db-worker && docker build . -t ${{ env.DB-WORKER-REPO }}:${{ env.RELEASE_VERSION }}
+          cd ../email-worker && docker build . -t ${{ env.EMAIL-WORKER-REPO }}:${{ env.RELEASE_VERSION }}
 
       - name: Testing
         run: |
@@ -38,11 +37,11 @@ jobs:
           --env TEST_MODE=YES \
           --env PRIVATE_KEY=17559258d3ac145d717dcafea3277fe82a3cb5d5bad01296925bdd9a2e0c3370 \
           --env SECRET_KEY=a86a57ed41d9720bd481594917da2bca \
-          {{ env.AUTH-SERVER-REPO }}:{{ env.RELEASE_VERSION }} pytest tests
+          ${{ env.AUTH-SERVER-REPO }}:${{ env.RELEASE_VERSION }} pytest tests
 
       - name: Push images to docker hub
         run: | 
-          docker login -u {{ secret.DOCKER_HUB_USER }} -p {{ secret.DOCKER_HUB_PASS }}
-          docker push {{ env.AUTH-SERVER-REPO }}:{{ env.RELEASE_VERSION }}
-          docker push {{ env.DB-WORKER-REPO }}:{{ env.RELEASE_VERSION }}
-          docker push {{ env.EMAIL-WORKER-REPO }}:{{ env.RELEASE_VERSION }}
+          docker login -u ${{ secrets.DOCKER_HUB_USER }} -p ${{ secrets.DOCKER_HUB_PASS }}
+          docker push ${{ env.AUTH-SERVER-REPO }}:${{ env.RELEASE_VERSION }}
+          docker push ${{ env.DB-WORKER-REPO }}:${{ env.RELEASE_VERSION }}
+          docker push ${{ env.EMAIL-WORKER-REPO }}:${{ env.RELEASE_VERSION }}
