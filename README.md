@@ -10,7 +10,82 @@ This project is an Authentication and Authorization server for microservices.
 - [Celery](https://docs.celeryq.dev/en/stable/getting-started/introduction.html).
 
 ## How Run
-ss
+
+### Using Docker-Compose:
+
+Create the file .env:
+```
+COMPOSE_PROJECT_NAME=auth-fastapi-2
+
+DB_SERVER=db-server
+DB_NAME=auth
+DB_USER=example
+DB_PASSWORD=example
+DB_PORT=5432
+
+RABBITMQ_SERVER=broker
+RABBITMQ_USER=example
+RABBITMQ_PASSWORD=example
+RABBITMQ_VHOST=default
+
+SENDER_EMAIL=example_sender@outlook.com
+SENDER_EMAIL_PASSWORD=example
+
+ADMIN_USER_EMAIL=admin@admin.com
+
+#HS256 Secret Key, string of 64 chars, you can gen using: openssl rand -hex 32
+PRIVATE_KEY=17559258d3ac145d717dcafea3277fe82a3cb5d5bad01296925bdd9a2e0c3370
+
+#AES-CBC Secret Key, string of 32 chars, you can gen using: openssl rand -hex 16
+SECRET_KEY=a86a57ed41d9720bd481594917da2bca
+```
+
+And now, create the file docker-compose.yml:
+```yaml
+version: "3"
+services:
+
+  db-server:
+    image: postgres:14.2-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+  broker:
+    image: rabbitmq:3.9.13-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+
+  email-worker:
+    image: thunderssgss/email-worker:v0.3.0
+    environment:
+      RABBITMQ_URI: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_SERVER}/${RABBITMQ_VHOST}
+      SENDER_EMAIL: ${SENDER_EMAIL}
+      SENDER_EMAIL_PASSWORD: ${SENDER_EMAIL_PASSWORD}
+
+  db-worker:
+    image: thunderssgss/db-worker:v0.3.0
+    environment:
+      ADMIN_USER_EMAIL: ${ADMIN_USER_EMAIL}
+      RABBITMQ_URI: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_SERVER}/${RABBITMQ_VHOST}
+      DATABASE_URI: ${DB_USER}:${DB_PASSWORD}@${DB_SERVER}/${DB_NAME}
+
+  auth-server:
+    image: thunderssgss/auth-server:v0.3.0
+    environment:
+      DATABASE_URI: ${DB_USER}:${DB_PASSWORD}@${DB_SERVER}/${DB_NAME}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+      RABBITMQ_URI: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_SERVER}/${RABBITMQ_VHOST}
+    ports:
+      - 8080:80
+```
+
+### Using Kubernets (Healm Chart):
+**NOTE**: THE healm chart is not read
 
 ## How Work
 This project uses [Event driven Arquitecture](https://en.wikipedia.org/wiki/Event-driven_architecture) with [Rabbitmq](https://www.rabbitmq.com/) as a message broker and 3 microservices:
