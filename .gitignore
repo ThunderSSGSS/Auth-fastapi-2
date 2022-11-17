@@ -8,13 +8,27 @@
 *.so
 *.pyc
 
-#Others
+# Terraform
+*.tfstate*
+*.terraform*
+
+# VSCode
 *.code-workspace
+
+# KEYS
 *.pem
+
+# Drawio
 *.drawio.*
+
+# WORD
 *.doc
 *.docx
+
+# PNGS
 *.png
+
+# Database
 data.database
 amanha.txt
 NOVO.txt
