@@ -39,6 +39,8 @@ services:
       SENDER_EMAIL_PASSWORD: ${SENDER_EMAIL_PASSWORD}
     volumes:
       - ../../src/email-worker/:/home/myuser/
+    depends_on:
+      - broker
 
 
   #################____DB_WORKER___##################
@@ -60,6 +62,9 @@ services:
       DATABASE_URI: ${DB_USER}:${DB_PASSWORD}@${DB_SERVER}/${DB_NAME}
     volumes:
       - ../../src/db-worker/:/home/myuser/
+    depends_on:
+      - broker
+      - db-server
 
 
   #################____AUTH_API___##################
@@ -91,6 +96,9 @@ services:
       - ../../src/auth-server/:/home/myuser/
     ports:
       - 8080:80
+    depends_on:
+      - broker
+      - db-server
 
   #################____TEST_APP___##################
   test-app:
@@ -103,3 +111,5 @@ services:
       - ../../src/test-app/:/home/myuser/
     ports:
       - 8081:80
+    depends_on:
+      - auth-server

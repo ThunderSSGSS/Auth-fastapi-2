@@ -1,5 +1,6 @@
 from celery import Celery
 from celery.signals import worker_init
+from time import sleep
 from .settings import RABBITMQ_URI, DEFAULT_QUEUE, ADMIN_USER_EMAIL
 #database
 from .database import engine, Base, SessionLocal
@@ -12,10 +13,19 @@ app.conf.task_default_queue=DEFAULT_QUEUE
 
 
 #___________SIGNALS_____________#
+def create_tables():
+	for i in range(1,101):
+		try: 
+			Base.metadata.create_all(bind=engine)
+			break
+		except:
+			print('Error connecting to database. Try again in 6 seconds. ('+str(i)+'/100)')
+			sleep(6)
+
+
 @worker_init.connect
 def define_database(**kwargs):
-
-	Base.metadata.create_all(bind=engine)
+	create_tables()
 	db = SessionLocal()
 	setted=False
 
