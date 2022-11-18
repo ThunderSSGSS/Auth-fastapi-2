@@ -1,4 +1,4 @@
-{{- if .Values.configmap.create -}}
+{{- if .Values.deployment.envs -}}
 
 apiVersion: v1
 kind: ConfigMap
@@ -6,8 +6,8 @@ metadata:
   name: {{ .Values.name }}-configmap
 data:
 
-  {{- range .Values.configmap.keys }}
-  {{ .key }}: {{ .value }}
+  {{- range .Values.deployment.envs }}
+  {{ .name }}: {{ .value }}
   {{- end }}
 
 {{- end }}

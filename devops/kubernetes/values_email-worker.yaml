@@ -1,50 +1,19 @@
 #____APP_NAME_______#
 name: email-worker
 
-#______SECRET_VALUES_________#
-secret:
-  create: true
-  keys:
-    #TO generate (echo -n 'string' | base64)
-    - key: email
-      value: ZXhhbXBsZQ==
-    - key: email-password
-      value: ZXhhbXBsZQ==
-
-    #BROKER URI
-    #amqp://<username>:<password>@<hostname>/<vhost_name>
-    - key: broker-uri
-      value: YW1xcDovL2V4YW1wbGU6ZXhhbXBsZUBicm9rZXItc2VydmljZS5icm9rZXItbmFtZXNwYWNlLy8=
- 
-
-#______CONFIGMAP_VALUES_________#
-configmap:
-  create: true
-  keys:
-    #Broker Queues
-    - key: email-queue
-      value: auth_emails
-
-
 #____DEPLOYMENT_VALUES_____#
 deployment:
   replicas: 1
   image: auth-fastapi-2_email-worker
   tag: latest
   pullPolicy: IfNotPresent
-  
-  #container envs
-  create_env: true
   envs:
-    - name: RABBITMQ_URI
-      is_secret: true
-      key: broker-uri
     - name: WORKER_DEFAULT_QUEUE
-      is_secret: false
-      key: email-queue
+      value: auth_emails
+  secrets:
+    - name: RABBITMQ_URI
+      value: YW1xcDovL2V4YW1wbGU6ZXhhbXBsZUBicm9rZXItc2VydmljZS5icm9rZXItbmFtZXNwYWNlLy8=
     - name: SENDER_EMAIL
-      is_secret: true
-      key: email
+      value: ZXhhbXBsZQ==
     - name: SENDER_EMAIL_PASSWORD
-      is_secret: true
-      key: email-password
+      value: ZXhhbXBsZQ==

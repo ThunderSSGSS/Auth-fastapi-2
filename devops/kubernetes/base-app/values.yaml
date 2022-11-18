@@ -10,40 +10,27 @@ ingress:
     - path: /path/
       pathType: Prefix
 
-#______SECRET_VALUES_________#
-secret:
-  create: false #if true, create secret
-  keys:
-    - key: value
-      value: base64Value
-
-#______CONFIGMAP_VALUES_________#
-configmap:
-  create: false #if true, create configmap
-  keys:
-    - key: name
-      value: value
-
 #____DEPLOYMENT_VALUES_____#
 deployment:
   replicas: 1
   image: image_name
   tag: tag
   pullPolicy: IfNotPresent
-
-  #container ports
-  create_port: false #if true, create container ports
-  ports:
-    - name: http
-      port: 80
   
-  #container envs
-  create_env: false #if true, create container env variables
-  envs:
-    - name: NAME
-      is_secret: true #if true, is secret key else is configmap key
-      key: secret_key
+  # CONTAINER PORTS
+  # ports:
+  # - name: http
+  #   port: 80
+  
+  # CONTAINER ENVS
+  # envs:
+  # - name: NAME1
+  #   value: value
 
+  # CONTAINER SECRETS
+  # secrets:
+  # - name: NAME2
+  #   value: base64_value
 
 #____SERVICE_VALUES____#
 service:

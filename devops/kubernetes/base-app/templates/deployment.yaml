@@ -21,8 +21,7 @@ spec:
           image: {{ .Values.deployment.image }}:{{ .Values.deployment.tag }}
           imagePullPolicy: {{ .Values.deployment.pullPolicy }}
 
-          #CONATINER PORTS
-          {{- if .Values.deployment.create_port }}
+          {{- if .Values.deployment.ports }}
           ports:
           {{- range .Values.deployment.ports }}
           - containerPort: {{ .port }}
@@ -31,19 +30,28 @@ spec:
           {{- end }}
 
           {{- $root := . }}
-          #CONATINER ENVS
-          {{- if .Values.deployment.create_env }}
+
+          {{- if .Values.deployment.envs }}
           env:
           {{- range .Values.deployment.envs }}
           - name: {{ .name }}
             valueFrom:
-            {{- if .is_secret }}
-              secretKeyRef:
-                name: {{ $root.Values.name }}-secret
-            {{- else }}
               configMapKeyRef:
                 name: {{ $root.Values.name }}-configmap
-            {{- end }}
-                key: {{ .key }}
+                key: {{ .name }}
+          {{- end }}
+          {{- end }}
+
+          {{- if .Values.deployment.secrets }}
+          {{- if .Values.deployment.envs }}
+          {{- else }}
+          env:
+          {{- end }}
+          {{- range .Values.deployment.secrets }}
+          - name: {{ .name }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ $root.Values.name }}-secret
+                key: {{ .name }}
           {{- end }}
           {{- end }}
