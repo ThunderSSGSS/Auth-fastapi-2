@@ -176,3 +176,6 @@ For more documentation:
 ## DevInfos:
 - Name: James Artur (Thunder);
 - A DevOps and infrastructure enthusiastics.
+- Name: Joel Soto
+- A software engineer wanting to learn more
+
