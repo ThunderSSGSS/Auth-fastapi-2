@@ -174,5 +174,5 @@ For more documentation:
 
 
 ## DevInfos:
-- Name: James Artur (Thunder);
-- A DevOps and infrastructure enthusiastics.
+- James Artur (Thunder), a DevOps and infrastructure enthusiastics;
+- Joel Soto, a Software engineer wanting to learn more.
