@@ -1,0 +1,34 @@
+# This workflow will test pull requests
+name: Test_pull_requests
+
+on:
+  pull_request:
+    types: [opened, reopened, closed]
+    paths: ["src/**"]
+
+env:
+  AUTH-SERVER-REPO: thunderssgss/auth-server
+  DB-WORKER-REPO: thunderssgss/db-worker
+  EMAIL-WORKER-REPO: thunderssgss/email-worker
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build base images
+        run: cd cmd && chmod +x init.sh && ./init.sh && cd ..
+
+      - name: Build auth-server, email-worker and db-worker docker images
+        run: |
+          cd src/auth-server && docker build . -t ${{ env.AUTH-SERVER-REPO }}
+          cd ../db-worker && docker build . -t ${{ env.DB-WORKER-REPO }}
+          cd ../email-worker && docker build . -t ${{ env.EMAIL-WORKER-REPO }}
+
+      - name: Testing
+        run: |
+          docker run \
+          --env TEST_MODE=YES \
+          --env PRIVATE_KEY=17559258d3ac145d717dcafea3277fe82a3cb5d5bad01296925bdd9a2e0c3370 \
+          --env SECRET_KEY=a86a57ed41d9720bd481594917da2bca \
+          ${{ env.AUTH-SERVER-REPO }} pytest tests
