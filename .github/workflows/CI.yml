@@ -1,11 +1,14 @@
 # This workflow will test, create docker images and push to dockerhub
-name: CI-CD
+name: CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
+    paths: ["src/**"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
+    types: [closed]
+    paths: ["src/**"]
 
 env:
   RELEASE_VERSION: v0.4.0
@@ -16,12 +19,12 @@ env:
 jobs:
   CI:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
     environment: 
       name: deploy_docker_hub
 
     steps:
       - uses: actions/checkout@v3
-
       - name: Build base images
         run: cd cmd && chmod +x init.sh && ./init.sh && cd ..
 
@@ -40,7 +43,7 @@ jobs:
           ${{ env.AUTH-SERVER-REPO }}:${{ env.RELEASE_VERSION }} pytest tests
 
       - name: Push images to docker hub
-        run: | 
+        run: |
           docker login -u ${{ secrets.DOCKER_HUB_USER }} -p ${{ secrets.DOCKER_HUB_PASS }}
           docker push ${{ env.AUTH-SERVER-REPO }}:${{ env.RELEASE_VERSION }}
           docker push ${{ env.DB-WORKER-REPO }}:${{ env.RELEASE_VERSION }}
